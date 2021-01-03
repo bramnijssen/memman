@@ -43,16 +43,6 @@ services:
     networks:
       - memman
 
-  composer:
-    image: composer:2
-    container_name: memman_composer
-    volumes: 
-      - ./src:/var/www/html
-    working_dir: /var/www/html
-    entrypoint: ["composer"]
-    networks:
-      - memman
-
   npm:
     image: node:14.15-alpine
     container_name: memman_node

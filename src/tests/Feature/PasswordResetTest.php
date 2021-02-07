@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -47,6 +48,18 @@ class PasswordResetTest extends TestCase
         });
     }
 
+    public function test_reset_password_will_not_work_with_invalid_email()
+    {
+        $user = User::factory()->make();
+
+        $response = $this->from(RouteServiceProvider::HOME)->post('/forgot-password', [
+            'email' => $user->email,
+        ]);
+
+        $response->assertSessionHasErrors();
+        $response->assertRedirect(RouteServiceProvider::HOME);
+    }
+
     public function test_password_can_be_reset_with_valid_token()
     {
         Notification::fake();
@@ -67,5 +80,20 @@ class PasswordResetTest extends TestCase
 
             return true;
         });
+    }
+
+    public function test_password_can_not_be_reset_with_invalid_token()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->from(RouteServiceProvider::HOME)->post('/reset-password', [
+            'token' => 'invalid',
+            'email' => $user->email,
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response->assertSessionHasErrors();
+        $response->assertRedirect(RouteServiceProvider::HOME);
     }
 }

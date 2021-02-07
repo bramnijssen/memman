@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -27,6 +28,14 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
+        $response->assertRedirect(RouteServiceProvider::HOME);
+    }
+
+    public function test_existing_users_can_not_register()
+    {
+        $user = User::factory()->create();
+        
+        $response = $this->actingAs($user)->get('/register');
         $response->assertRedirect(RouteServiceProvider::HOME);
     }
 }

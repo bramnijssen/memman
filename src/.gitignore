@@ -2,6 +2,7 @@
 /public/hot
 /public/storage
 /storage/*.key
+/tests/report
 /vendor
 .env
 .env.backup
@@ -11,3 +12,5 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+
+wait-for-it.sh

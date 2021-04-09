@@ -26,13 +26,21 @@ services:
     volumes: 
       - src:/var/www/html
     environment:
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_NAME: ${APP_NAME}
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_URL: ${APP_URL}
+      DB_PASSWORD: ${DB_PASSWORD}
+      NODE_ENV: ${APP_ENV}
+    depends_on: 
+      - postgresql
+    entrypoint: ./init.sh
     networks:
       - memman
 
   postgresql:
     build: 
-      context: ./docker/postgres
+      context: ./docker/postgresql
       target: prod
     container_name: memman_postgresql
     ports:
@@ -41,17 +49,9 @@ services:
       - db:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: memman
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     networks:
       - memman
-
-  npm:
-    image: node:14.15-alpine
-    container_name: memman_node
-    volumes: 
-      - src:/var/www/html
-    working_dir: /var/www/html
-    entrypoint: ["npm"]
 
 networks:
   memman:
